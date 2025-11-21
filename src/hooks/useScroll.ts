@@ -59,7 +59,7 @@ export function useScroll<T>({
     await loadData()
   }
 
-  onMounted(() => {
+  onLoad(() => {
     refresh()
   })
 

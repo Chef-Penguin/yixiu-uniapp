@@ -1,14 +1,20 @@
 <template>
   <div class="container">
-    <p class="title">选择国家 / 地区</p>
+    <p class="title">
+      选择国家 / 地区
+    </p>
     <div style="padding: 0 20px;margin-bottom: 26px;">
       <CustomSearch :search="search" @input-search="input" />
     </div>
-  
+
     <div class="code_container">
-      <div class="code_item" v-for="area in list" :key="area.id" @click="onHandleCodeItemClick(area)">
-        <div class="item_right">{{ area.name}}</div>
-        <div class="item_left">{{ area.code }}</div>
+      <div v-for="area in list" :key="area.id" class="code_item" @click="onHandleCodeItemClick(area)">
+        <div class="item_right">
+          {{ area.name }}
+        </div>
+        <div class="item_left">
+          {{ area.code }}
+        </div>
       </div>
     </div>
   </div>
@@ -17,44 +23,45 @@
 <script setup>
 import {
   getProjectCodeApi,
-} from "@/api/user.js"
-import { onMounted } from "vue"
+} from '@/api/user.js'
+
+defineOptions({ name: 'AreaCodeSelect' })
 const props = defineProps({
   onHandleCodeItem: { type: Function },
 })
+const emits = defineEmits(['close-popup'])
 const search = ref('')
 const allList = ref([])
 const list = ref([])
-const getCode = async () => {
+async function getCode() {
   try {
-    const { data } = await getProjectCodeApi({ code: "" })
+    const { data } = await getProjectCodeApi({ code: '' })
     allList.value = Array.isArray(data) ? data : []
     list.value = allList.value
-  } catch (error) { }
+  }
+  catch (error) { }
 }
-const emits = defineEmits(["close-popup"])
-const onHandleCodeItemClick = (codeItem) => {
+function onHandleCodeItemClick(codeItem) {
   if (typeof props.onHandleCodeItem === 'function') {
     props.onHandleCodeItem(codeItem)
   }
   emits('close-popup')
 }
-const input = (val) => {
-  const keyword = String(val ?? "").trim().toLowerCase()
+function input(val) {
+  const keyword = String(val ?? '').trim().toLowerCase()
   if (!keyword) {
     list.value = allList.value
     return
   }
   list.value = allList.value.filter((item) => {
-    const name = String(item.name ?? "").toLowerCase()
-    const code = String(item.code ?? "")
-    return name.includes(keyword) || code.replace(/^\+/, "").includes(keyword.replace(/^\+/, ""))
+    const name = String(item.name ?? '').toLowerCase()
+    const code = String(item.code ?? '')
+    return name.includes(keyword) || code.replace(/^\+/, '').includes(keyword.replace(/^\+/, ''))
   })
 }
-onMounted(async () => {
+onLoad(async () => {
   await getCode()
 })
-defineOptions({ name: "AreaCodeSelect" })
 </script>
 
 <style lang="scss" scoped>

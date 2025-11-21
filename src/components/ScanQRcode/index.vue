@@ -120,7 +120,7 @@ let animationId = null
 let stream = null
 
 // 初始化画布
-onMounted(() => {
+onLoad(() => {
   canvasContext.value = canvasRef.value.getContext('2d')
   // 移除自动调用，必须在用户交互事件中调用 getUserMedia
   // startScan('vin')

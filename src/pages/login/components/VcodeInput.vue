@@ -66,7 +66,7 @@ watch(
   },
 )
 
-onMounted(() => {
+onLoad(() => {
   // 初始聚焦到第一个输入框
   setTimeout(() => {
     focusIndex.value = 0

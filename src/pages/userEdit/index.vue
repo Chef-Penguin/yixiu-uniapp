@@ -220,7 +220,7 @@ async function getOptions() {
     }
   }
 }
-async function onLoad() {
+async function initialization() {
   if (!route.query?.first) {
     console.log('不是新用户')
     try {
@@ -282,9 +282,9 @@ async function onLoad() {
   }
 }
 
-onMounted(async () => {
+onLoad(async () => {
   await getOptions() // 先加载字典
-  await onLoad() // 再回显数据
+  await initialization() // 再回显数据
 })
 </script>
 

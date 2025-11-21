@@ -1,5 +1,5 @@
 <template>
-  <CustomSearch v-model="search" @search="onLoad" />
+  <CustomSearch v-model="search" @search="initialization" />
   <div class="container">
     <Content
       v-for="item in treeData"
@@ -47,7 +47,7 @@ function setHighlight(list) {
 }
 const treeData = ref([])
 const search = ref('发动机')
-async function onLoad() {
+async function initialization() {
   const { codes } = useCarStore()
   const {
     data: { data: result },
@@ -69,8 +69,8 @@ function handleNodeClick(node) {
     },
   })
 }
-onMounted(() => {
-  onLoad()
+onLoad(() => {
+  initialization()
 })
 </script>
 

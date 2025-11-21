@@ -1,22 +1,20 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { getCarCount, getQueryLog } from '@/api/log'
 import { getUserInfo } from '@/api/user.js'
 import { useUserStore } from '@/store/user'
+import { currRoute } from '@/utils/index'
 import RequestLoading from '@/utils/RequestLoading'
 
-// const userStore = useUserStore()
+const routeInfo = currRoute()
+const userStore = useUserStore()
 const carCountText = ref('')
-const activeNames = ref(null)
 const logList = ref([])
 const showCarCount = ref(false)
 const search = ref('')
-const offset = ref({ x: 350, y: 620 })
 const menuStates = ref([]) // 数组索引对应 logList 的 index
 const baseUrl = import.meta.env.VITE_SERVER
 // 创建router实例
-const router = useRouter()
 function toggleExpand(current) {
   current.isExpanded = !current.isExpanded
 }
@@ -93,22 +91,16 @@ function toggleMenu(e, index) {
 // 模拟“查看关联对话”点击事件
 function viewRelated(data, index) {
   console.log(data, index, '查看关联对话')
-  router.push({
-    path: '/conversationHistory',
-    query: {
-      data: JSON.stringify(data),
-    },
+  uni.navigateTo({
+    url: `/pages/conversationHistory/index?data=${JSON.stringify(data)}`,
   })
   hideMenu()
 }
 // 模拟“编辑”点击事件
 function editLog(data) {
   console.log(data, '编辑日志')
-  router.push({
-    path: '/editLog',
-    query: {
-      data: JSON.stringify(data),
-    },
+  uni.navigateTo({
+    url: `/pages/editLog/index?data=${JSON.stringify(data)}`,
   })
   hideMenu()
 }
@@ -135,18 +127,19 @@ function handleClickOutside(e) {
   })
 }
 // 监听全局点击事件
-onMounted(() => {
+onLoad(() => {
   document.addEventListener('click', handleClickOutside)
-  onLoad()
+  initialization()
 })
-const route = useRoute()
+
 onActivated(() => {
-  onLoad()
-  if (route.query.fromCreateLog) {
+  initialization()
+  const routeInfo = currRoute()
+  if (routeInfo.query.fromCreateLog) {
     queryCarCount()
     getUserInfo().then((response) => {
       userStore.setRepairCount(response.data.repairCount)
-      route.query.fromCreateLog = false
+      routeInfo.query.fromCreateLog = false
     })
   }
 })
@@ -182,7 +175,7 @@ async function searchClick(search) {
     menuStates.value = []
   }
 }
-async function onLoad() {
+async function initialization() {
   try {
     const response = await RequestLoading(getQueryLog, { title: '' })
     logList.value
@@ -202,44 +195,44 @@ async function onLoad() {
 </script>
 
 <template>
-  <div class="tabbar-page">
+  <view class="tabbar-page">
     <CustomSearch v-model="search" @search="searchClick(search)" />
     <!-- 关键：用v-for遍历logList，定义log变量 -->
-    <div
+    <view
       v-for="(log, index) in logList"
       :key="log.id || index"
       class="log-container"
     >
       <!-- <van-floating-bubble v-model:offset="offset" icon="edit" axis="xy" /> -->
-      <div class="log-header">
+      <view class="log-header">
         <span class="log-title">修车日志</span>
         <!-- 现在log已定义，可安全访问log.createTime -->
         <span class="log-date">{{ formatDate(log.createTime) }}</span>
-        <button class="menu-btn" @click.stop="toggleMenu($event, index)">
+        <view class="menu-btn" @click.stop="toggleMenu($event, index)">
           <van-icon name="ellipsis" />
-        </button>
-      </div>
-      <div class="log-text">
+        </view>
+      </view>
+      <view class="log-text">
         <!-- 回显log.title、log.summaryContent -->
-        <p>{{ log.title || "" }}</p>
-        <p v-html="log.summaryContent" />
-        <button class="expand-btn" @click="toggleExpand(log)">
+        <text>{{ log.title || "" }}</text>
+        <text v-html="log.summaryContent" />
+        <view class="expand-btn" @click="toggleExpand(log)">
           {{ log.isExpanded ? "收起" : "展开" }}
-        </button>
-      </div>
+        </view>
+      </view>
 
-      <div v-if="log.images && log.images !== ''" class="image-placeholders">
-        <div
-          v-for="img in log.images.split(',').filter((item) => item)"
-          :key="img"
+      <view v-if="log.images && log.images !== ''" class="image-placeholders">
+        <view
+          v-for="image in log.images.split(',').filter((item) => item)"
+          :key="image"
           class="placeholder"
         >
-          <img :src="`${baseUrl}/${img}`" alt="" srcset="">
-        </div>
-      </div>
+          <image :src="`${baseUrl}/${image}`" alt="" srcset="" />
+        </view>
+      </view>
 
       <!-- 操作菜单弹窗（保持不变） -->
-      <div
+      <view
         v-if="menuStates[index]?.isShow"
         class="operation-menu"
         :class="`operation-menu-${index}`"
@@ -250,35 +243,35 @@ async function onLoad() {
         @click.stop
       >
         <!-- 传递当前 log 的 id 和 index -->
-        <div class="menu-item" @click="viewRelated(log.id, index)">
+        <view class="menu-item" @click="viewRelated(log.id, index)">
           查看关联对话
-        </div>
-        <div class="menu-item" @click="editLog(log.id, index)">
+        </view>
+        <view class="menu-item" @click="editLog(log.id, index)">
           编辑
-        </div>
-        <div class="menu-item" @click="shareLog(log.id, index)">
+        </view>
+        <view class="menu-item" @click="shareLog(log.id, index)">
           分享[预留功能]
-        </div>
-        <div class="menu-item" @click="inteRview(log.id, index)">
+        </view>
+        <view class="menu-item" @click="inteRview(log.id, index)">
           提审[预留功能]
-        </div>
-      </div>
-    </div>
+        </view>
+      </view>
+    </view>
 
     <!-- 可选：当没有日志时显示空提示 -->
-    <div v-if="logList.length === 0" class="empty-tip">
+    <view v-if="logList.length === 0" class="empty-tip">
       暂无修车日志
-    </div>
+    </view>
 
     <van-popup v-model:show="showCarCount" round :style="{ padding: '54px' }">
-      <div style="color: #f46205; text-align: center">
-        <p>{{ userStore.user.name }}</p>
-        <p>这是一修师傅陪你修复的第</p>
-        <p>{{ carCountText }}</p>
-        <p>台车</p>
-      </div>
+      <view style="color: #f46205; text-align: center">
+        <text>{{ userStore.user.name }}</text>
+        <text>这是一修师傅陪你修复的第</text>
+        <text>{{ carCountText }}</text>
+        <text>台车</text>
+      </view>
     </van-popup>
-  </div>
+  </view>
 </template>
 
 <style scoped lang="scss">
@@ -353,7 +346,7 @@ async function onLoad() {
   width: 80px;
   height: 80px;
   border: 1px solid #ccc;
-  img {
+  image {
     width: 100%;
     height: 100%;
   }

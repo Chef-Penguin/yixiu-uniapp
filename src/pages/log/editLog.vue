@@ -71,15 +71,15 @@ async function handleRichTextSubmit(content) {
 
 const route = useRoute()
 let parsedData = null
-onMounted(() => {
+onLoad(() => {
   const { data } = route.query
   if (data) {
     parsedData = JSON.parse(data)
     console.log('接收的数据:', parsedData)
   }
-  onLoad()
+  initialization()
 })
-async function onLoad() {
+async function initialization() {
   try {
     const response = await getLog(parsedData)
     console.log('完整响应数据：', response)

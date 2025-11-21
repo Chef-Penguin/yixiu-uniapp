@@ -57,15 +57,15 @@ function handleGoBack() {
 }
 const route = useRoute()
 let parsedData = null
-onMounted(() => {
+onLoad(() => {
   const { data } = route.query
   if (data) {
     parsedData = JSON.parse(data)
     console.log('接收的数据:', parsedData)
   }
-  onLoad()
+  initialization()
 })
-async function onLoad() {
+async function initialization() {
   try {
     const response = await RequestLoading(getRelatedLog, {
       logId: parsedData,

@@ -98,7 +98,7 @@ function onSearch(val) {
   search.value = val
 }
 
-async function onLoad() {
+async function initialization() {
   const {
     data: { children },
   } = await getCarModelApi()
@@ -131,8 +131,8 @@ function onHanleNode(car) {
   }
 }
 
-onMounted(async () => {
-  await onLoad()
+onLoad(async () => {
+  await initialization()
 })
 </script>
 

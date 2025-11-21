@@ -127,6 +127,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { logoutApi } from '@/api/user'
+import { useUserStore } from '@/store/user'
 import RequestLoading from '@/utils/RequestLoading'
 
 const props = defineProps({
@@ -138,7 +139,7 @@ const props = defineProps({
 const emit = defineEmits(['update:showMore'])
 const showDialog = ref(false)
 const showPopup = ref(false)
-// const userStore = useUserStore()
+const userStore = useUserStore()
 const router = useRouter()
 const show = computed({
   get() {

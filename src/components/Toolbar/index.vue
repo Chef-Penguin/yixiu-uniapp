@@ -85,7 +85,7 @@ watch(
     }
   },
 )
-onMounted(() => {
+onLoad(() => {
   // 初始化 Quill 编辑器
   if (editorContainer.value) {
     quillInstance = new Quill(editorContainer.value, {

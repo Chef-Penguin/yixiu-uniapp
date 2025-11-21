@@ -24,7 +24,7 @@ const editor = ref(null)
 const toolbar = ref(null)
 let quill = null
 
-onMounted(() => {
+onLoad(() => {
   // 初始化 toolbar 配置
   // 自定义 image handler，优先使用 props.uploadImage
   const toolbarOptions = {

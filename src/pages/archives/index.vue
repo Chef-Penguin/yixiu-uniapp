@@ -25,7 +25,7 @@ const rootSrc = SERVER
 // 数据
 const faults = ref([])
 const informations = ref([])
-function onLoad() {
+function initialization() {
   recentlyUpdatedApi().then((res) => {
     informations.value = res.data || []
   })
@@ -33,8 +33,8 @@ function onLoad() {
     faults.value = res.data || []
   })
 }
-onMounted(() => {
-  onLoad()
+onLoad(() => {
+  initialization()
 })
 function onHandleClick(info) {
   uni.navigateTo({

@@ -53,7 +53,7 @@ const onHandleConfirm = () => {
   props.onChange(active.value)
   emit("close-popup")
 }
-onMounted(() => {
+onLoad(() => {
   props.columns.forEach((item) => {
     if (props.model[props.prop].includes(item.code)) {
       item.isActive = true

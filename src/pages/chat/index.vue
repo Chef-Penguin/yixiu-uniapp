@@ -118,7 +118,7 @@ function handleRichTextSubmit(value) {
   submitData.value = value
   titleShow.value = true
 }
-onMounted(async () => {
+onLoad(async () => {
   const mode = route.query.mode || null
   if (mode) {
     const data = JSON.parse(route.query.data || 'null')

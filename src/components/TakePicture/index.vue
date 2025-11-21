@@ -193,7 +193,7 @@ function submitResult() {
   closePicture()
 }
 
-onMounted(() => {
+onLoad(() => {
   getMediaStream()
   watch(
     () => props.show,

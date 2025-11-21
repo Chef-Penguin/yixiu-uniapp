@@ -1,17 +1,17 @@
 <script setup>
-import { getNow } from "@/utils/index"
-import { getCollectionListApi } from "@/api/collection"
-import RequestLoading from "@/utils/RequestLoading"
-import { onMounted, ref } from "vue"
-import { useRouter } from "vue-router"
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { getCollectionListApi } from '@/api/collection'
+import { getNow } from '@/utils/index'
+import RequestLoading from '@/utils/RequestLoading'
 
 const router = useRouter()
 const collections = ref([])
-const search = ref("")
-const sourceType = ["手册", "电路图", "其他"]
+const search = ref('')
+const sourceType = ['手册', '电路图', '其他']
 const isLoading = ref(false)
 
-const onLoad = async () => {
+async function initialization() {
   const { data } = await RequestLoading(getCollectionListApi, {
     name: search.value,
   })
@@ -20,10 +20,10 @@ const onLoad = async () => {
 }
 
 // 跳转到详情页
-const goToDetail = (item) => {
+function goToDetail(item) {
   if (item.targetId) {
     router.push({
-      name: "collectionDetail",
+      name: 'collectionDetail',
       query: {
         targetId: item.targetId,
       },
@@ -32,55 +32,67 @@ const goToDetail = (item) => {
 }
 
 // 提取图片链接
-const getImage = (info) => {
-  if (!info) return null
+function getImage(info) {
+  if (!info)
+    return null
   const regex = /<img[^>]+src=['"]([^'"]+)['"]+/i
   const match = info.match(regex)
   return match ? match[1] : null
 }
 
 // 格式化日期
-const formatDate = (timeStr) => {
-  if (!timeStr) return ''
+function formatDate(timeStr) {
+  if (!timeStr)
+    return ''
   // 假设格式为 "2025-11-18 09:49:21"
   const datePart = timeStr.split(' ')[0]
-  if (!datePart) return ''
+  if (!datePart)
+    return ''
   const [y, m, d] = datePart.split('-')
   return `${y}年${m}月${d}日`
 }
 
-onMounted(() => {
-  onLoad()
+onLoad(() => {
+  initialization()
 })
 </script>
 
 <template>
-  <div class="tabbar-page">
-    <CustomSearch v-model="search" @search="onLoad" />
-    <div class="collection-container">
+  <view class="tabbar-page">
+    <CustomSearch v-model="search" @search="initialization" />
+    <view class="collection-container">
       <van-pull-refresh
         v-model="isLoading"
         success-text="刷新成功"
-        @refresh="onLoad"
         class="collection-container"
+        @refresh="initialization"
       >
-        <div class="collection-item" v-for="item in collections" :key="item.id" @click="goToDetail(item)">
-          <div class="left-section">
-            <div class="item-title">{{ item.name }}</div>
-            <div class="item-summary">{{ item.summary }}</div>
-            <div class="item-footer">
-              <div class="source">{{  '来源名称&nbsp;' + item.sourceName }}</div>
-              <div class="time">{{ formatDate(item.createdTime) }}</div>
-            </div>
-          </div>
-          <div class="right-section" v-if="getImage(item.imageInfo)">
-             <img :src="getImage(item.imageInfo)" alt="" />
-          </div>
-        </div>
+        <view v-for="item in collections" :key="item.id" class="collection-item" @click="goToDetail(item)">
+          <view class="left-section">
+            <view class="item-title">
+              {{ item.name }}
+            </view>
+            <view class="item-summary">
+              {{ item.summary }}
+            </view>
+            <view class="item-footer">
+              <view class="source">
+                {{ `来源名称 ${item.sourceName}` }}
+              </view>
+              <view class="time">
+                {{ formatDate(item.createdTime) }}
+              </view>
+            </view>
+          </view>
+          <view v-if="getImage(item.imageInfo)" class="right-section">
+            <img :src="getImage(item.imageInfo)" alt="">
+          </view>
+        </view>
       </van-pull-refresh>
-    </div>
-  </div>
+    </view>
+  </view>
 </template>
+
 <style lang="scss" scoped>
 .collection-container {
   padding-bottom: 20px;
@@ -94,8 +106,10 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+
     &:active {
       transform: scale(0.98);
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
@@ -139,11 +153,11 @@ onMounted(() => {
         justify-content: space-between;
         font-size: 12px;
         color: #999;
-        
+
         .source {
           flex-shrink: 0;
         }
-        
+
         .time {
           margin-left: auto;
           text-align: right;
@@ -156,7 +170,7 @@ onMounted(() => {
       height: 80px;
       margin-left: 10px;
       flex-shrink: 0;
-      
+
       img {
         width: 100%;
         height: 100%;

@@ -27,7 +27,7 @@ const props = defineProps({
 const emits = defineEmits(["close-popup"])
 const currentValue = ref([])
 
-onMounted(() => {
+onLoad(() => {
   const initial = [props?.model?.[props.prop]]
   if (initial !== undefined && initial !== null) {
     currentValue.value = initial

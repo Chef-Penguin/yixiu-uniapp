@@ -3,7 +3,9 @@
     <div class="document-header">
       <div class="header-title">
         <van-icon name="arrow-left" size="28" />
-        <div class="title">文档详情</div>
+        <div class="title">
+          文档详情
+        </div>
         <van-icon name="arrow" size="28" />
       </div>
       <div class="header-handle">
@@ -23,85 +25,93 @@
     </div>
     <div class="document-content">
       <TextSelectionMenu
-        @menu-click="onMenuClick"
         :menu-items="[{ label: '收藏', icon: '', action: 'collection' }]"
+        @menu-click="onMenuClick"
       >
-        <div v-html="content"></div>
+        <div v-html="content" />
       </TextSelectionMenu>
     </div>
     <van-dialog
-      @close="closeLabelDialog"
       v-model:show="showLabelAdd"
-      :showConfirmButton="false"
+      :show-confirm-button="false"
       close-on-click-overlay
+      @close="closeLabelDialog"
     >
       <div class="bookmark-dialog">
-        <div class="bookmark-title">书签命名</div>
-        <input type="text" v-model="form.label" class="bookmark-input" />
+        <div class="bookmark-title">
+          书签命名
+        </div>
+        <input v-model="form.label" type="text" class="bookmark-input">
         <van-button
-          @click="onConfirmAddLabel"
           class="bookmark-btn"
           type="primary"
-          >添加</van-button
+          @click="onConfirmAddLabel"
         >
+          添加
+        </van-button>
       </div>
     </van-dialog>
   </div>
 </template>
 
 <script setup>
-import { getDocumentContent } from "@/api/chat"
-import { addCollection } from "@/api/collection"
-import PopupService from "@/utils/PopupService"
-import RequestLoading from "@/utils/RequestLoading"
+import { getDocumentContent } from '@/api/chat'
+import { addCollection } from '@/api/collection'
+import PopupService from '@/utils/PopupService'
+import RequestLoading from '@/utils/RequestLoading'
+
+defineOptions({
+  name: 'DocumentContent',
+})
 const props = defineProps({
   id: {
     type: String,
-    default: "",
+    default: '',
   },
 })
-const content = ref("")
+const content = ref('')
 const showLabelAdd = ref(false)
 const form = ref({
-  label: "",
+  label: '',
 })
-const onMenuClick = ({ action, text }) => {
-  if (action === "collection") {
+function onMenuClick({ action, text }) {
+  if (action === 'collection') {
     RequestLoading(addCollection, {
       savedContent: text,
     })
       .then((res) => {
-        showSuccessToast("收藏成功")
+        showSuccessToast('收藏成功')
       })
       .catch((err) => {
         showFailToast(err.message)
       })
   }
-  console.log("选中菜单操作：", action)
+  console.log('选中菜单操作：', action)
 }
-const onConfirmAddLabel = async () => {
+async function onConfirmAddLabel() {
   if (form.value.label) {
     RequestLoading(addCollection, {
       targetId: props.id,
       name: form.value.label,
     })
       .then((res) => {
-        showSuccessToast("添加成功")
+        showSuccessToast('添加成功')
         showLabelAdd.value = false
       })
       .catch((err) => {
         showFailToast(err.message)
       })
-  } else {
-    return showFailToast("请输入书签名称")
+  }
+  else {
+    return showFailToast('请输入书签名称')
   }
 }
-const closeLabelDialog = () => {
-  form.value.label = ""
+function closeLabelDialog() {
+  form.value.label = ''
 }
-const onLoad = async () => {
+async function initialization() {
   showLoadingToast({
-    message: "加载中...",
+    message: '加载中...',
     forbidClick: true,
   })
   try {
@@ -110,27 +120,26 @@ const onLoad = async () => {
       id: props.id,
     })
     content.value = res.data.data
-  } catch (error) {
+  }
+  catch (error) {
     showFailToast(error.message)
-  } finally {
+  }
+  finally {
     closeToast()
   }
 }
-const onHandleClick = (type) => {
-  if (type !== "label") {
+function onHandleClick(type) {
+  if (type !== 'label') {
     PopupService.open({
-      component: type == "orders" ? "Directory" : "SearchContent",
+      component: type == 'orders' ? 'Directory' : 'SearchContent',
     })
-  } else {
+  }
+  else {
     showLabelAdd.value = true
   }
 }
-onMounted(() => {
-  onLoad()
-})
-
-defineOptions({
-  name: "DocumentContent",
+onLoad(() => {
+  initialization()
 })
 </script>
 

@@ -25,7 +25,7 @@ const loading = ref(true);
 const success = ref(false);
 const resultText = ref('');
 
-onMounted(() => {
+onLoad(() => {
   // 从URL参数中获取支付结果
   const { status, out_trade_no, trade_no } = route.query;
 

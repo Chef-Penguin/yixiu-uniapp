@@ -246,7 +246,7 @@ const handleScroll = () => {
 }
 
 // 生命周期
-onMounted(() => {
+onLoad(() => {
   window.addEventListener("scroll", handleScroll)
 })
 

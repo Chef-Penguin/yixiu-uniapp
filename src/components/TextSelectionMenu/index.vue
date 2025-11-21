@@ -624,7 +624,7 @@ const handleContextMenu = (e) => {
   }
 }
 
-onMounted(() => {
+onLoad(() => {
   // 禁用浏览器默认右键菜单和移动端长按菜单
   if (containerRef.value) {
     containerRef.value.addEventListener("contextmenu", handleContextMenu)
