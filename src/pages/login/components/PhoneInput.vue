@@ -1,107 +1,91 @@
 <template>
-  <div class="phone-login">
-    <div class="logo"></div>
-    <p class="title">一修师傅，你的修车助手</p>
-    <p class="subtitle">未注册手机验证登陆后自动登录</p>
-    <div class="phone_input">
-      <div class="area" @click="onHandleAreaCode">+{{ area }}</div>
-      <input type="text" v-model="localPhone" placeholder="请输入手机号" />
-    </div>
-    <div
+  <view class="phone-login">
+    <view class="logo" />
+    <text class="title">一修师傅，你的修车助手</text>
+    <text class="subtitle">未注册手机验证登陆后自动登录</text>
+    <view class="phone_input">
+      <view class="area" @tap="onHandleAreaCode">
+        +{{ area }}
+      </view>
+      <input
+        v-model="localPhone"
+        type="number"
+        placeholder="请输入手机号"
+        maxlength="11"
+      >
+    </view>
+    <view
       class="send_btn"
       :class="{ 'btn-active': isPhoneValid }"
-      @click="onSend"
+      @tap="onSend"
     >
       发送验证码
-    </div>
-    <div class="agreement">
-      <input id="agree" type="checkbox" v-model="localAgree" />
-      <label for="agree">已阅读并同意</label>
-      <span @click="onHandleShowAgreement(0)">《用户协议》</span>
-      <span @click="onHandleShowAgreement(1)">《数据隐私安全声明》</span>
-    </div>
-    <!-- 用户协议弹窗 -->
-    <van-popup
-      v-model:show="showAgreementPopup"
-      round
-      position="bottom"
-      :style="{ width: '100%', height: '95%' }"
-    >
-      <div class="agreement-header">
-        <span>用户协议</span>
-        <van-icon
-          name="cross"
-          @click="showAgreementPopup = false"
-          class="close-icon"
-        />
-      </div>
-      <div class="agreement-content">
-        <!-- 这里放置用户协议的具体内容，可从接口获取或直接写静态内容 -->
-        <p>欢迎使用本产品，以下是用户协议的具体内容...</p>
-        <p>1. 服务条款...</p>
-        <p>2. 隐私政策...</p>
-        <!-- 可根据实际协议内容补充更多段落 -->
-      </div>
-      <div class="agreement-footer">
-        <van-button type="primary" block @click="agreeAndContinue"
-          >同意并继续</van-button
-        >
-      </div>
-    </van-popup>
-  </div>
+    </view>
+    <view class="agreement">
+      <checkbox
+        :checked="localAgree"
+        class="agreement-checkbox"
+        @tap="localAgree = !localAgree"
+      />
+      <text class="agreement-label">已阅读并同意</text>
+      <text class="agreement-link" @tap="onHandleShowAgreement(0)">《用户协议》</text>
+      <text class="agreement-link" @tap="onHandleShowAgreement(1)">《数据隐私安全声明》</text>
+    </view>
+  </view>
 </template>
 
 <script setup>
-import { computed, toRefs } from "vue"
-import PopupService from "@/utils/PopupService"
+import { computed, toRefs } from 'vue'
+import PopupService from '@/utils/PopupService'
+
+defineOptions({ name: 'PhoneInput' })
+
 const props = defineProps({
-  modelValue: { type: String, default: "" },
+  modelValue: { type: String, default: '' },
   agree: { type: Boolean, default: false },
-  area: { type: String, default: "86" },
+  area: { type: String, default: '86' },
 })
+
 const emit = defineEmits([
-  "update:modelValue",
-  "update:agree",
-  "send",
-  "openAreaCodeSelect",
+  'update:modelValue',
+  'update:agree',
+  'send',
+  'openAreaCodeSelect',
 ])
 
-const { modelValue } = toRefs(props)
+const { modelValue, agree: propsAgree } = toRefs(props)
+
 const localPhone = computed({
   get: () => modelValue.value,
-  set: (v) => emit("update:modelValue", v),
+  set: v => emit('update:modelValue', v),
 })
 
 const localAgree = computed({
-  get: () => props.agree,
-  set: (v) => emit("update:agree", v),
+  get: () => propsAgree.value,
+  set: v => emit('update:agree', v),
 })
 
-const onSend = () => emit("send")
+function onSend() {
+  emit('send')
+}
 
-const onHandleAreaCode = () => {
-  emit("openAreaCodeSelect")
+function onHandleAreaCode() {
+  emit('openAreaCodeSelect')
 }
 
 // 判断手机号是否完整（11位数字，以1开头）
 const isPhoneValid = computed(() => {
-  const pattern = /^1[3456789]\d{9}$/
+  const pattern = /^1[3-9]\d{9}$/
   return pattern.test(localPhone.value)
 })
 
-defineOptions({ name: "PhoneInput" })
-
-const showAgreementPopup = ref(false)
-
-const agreeAndContinue = () => {
-  showAgreementPopup.value = false
-  // 这里可以添加“同意并继续”后的逻辑，比如跳转页面、提交操作等
-}
-const onHandleShowAgreement = (type) => {
+function onHandleShowAgreement(type) {
   // type 0: 用户协议, 1: 数据隐私安全声明
   PopupService.open({
-    component: type === 0 ? "Protocol" : "Conditions",
-    style: { padding: "10px 10px", height: "80%" },
+    component: type === 0 ? 'Protocol' : 'Conditions',
+    style: { padding: '10px 10px', height: '80%' },
+  }).catch(err => {
+    console.error('打开弹窗失败:', err)
   })
 }
 </script>
@@ -115,15 +99,16 @@ const onHandleShowAgreement = (type) => {
   overflow: hidden;
   margin-bottom: 20px;
   align-items: center;
-  min-height: 50px; // 固定最小高度
-  height: 50px; // 固定高度
+  min-height: 50px;
+  height: 50px;
   z-index: 99;
   margin-top: 20px;
+
   .area {
     padding: 10px 12px;
     background: transparent;
     border-right: 1px solid #000;
-    flex-shrink: 0; // 防止被压缩
+    flex-shrink: 0;
     height: 100%;
     display: flex;
     align-items: center;
@@ -141,51 +126,41 @@ const onHandleShowAgreement = (type) => {
     flex: 1;
     padding: 10px;
     font-size: 14px;
-    height: 100%; // 填满容器高度
-    min-height: 30px; // 最小高度
-    box-sizing: border-box; // 包含 padding
+    height: 100%;
+    min-height: 30px;
+    box-sizing: border-box;
   }
-}
-.van-button--default {
-  // width: 280px;
-  border-radius: 40px;
-  margin-left: -30px;
-  background: #000 !important;
-  color: #fff;
-  width: 160px;
 }
 
 .phone-login {
   display: flex;
   flex-direction: column;
-  padding-top: 130px;
+  padding-top: 50px;
   align-items: center;
   height: 100%;
   background-color: #f8f7fc;
-  // 键盘弹起时保持布局
   padding-bottom: env(safe-area-inset-bottom, 20px);
-  // 防止键盘弹起时页面被压缩
   min-height: 100vh;
-  min-height: -webkit-fill-available;
 }
 
 .logo {
   width: 300px;
   height: 300px;
-  background: url("/src/assets/images/login2.png");
+  // background: url('/src/static/images/login2.png');
   background-size: cover;
 }
 
 .title {
   font-size: 18px;
-  // margin-top: 50px;
-  // margin-bottom: 20px;
+  margin-top: 10px;
 }
 
 .subtitle {
   font-size: 12px;
   margin-bottom: 25px;
+  margin-top: 10px;
 }
+
 .send_btn {
   width: 310px;
   border-radius: 40px;
@@ -198,50 +173,32 @@ const onHandleShowAgreement = (type) => {
 }
 
 .send_btn.btn-active {
-  background: #f46205 !important; /* 主题橘黄色 */
+  background: #f46205 !important;
 }
 
 .agreement {
   font-size: 12px;
   color: #000;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   margin-top: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0 20px;
 }
 
-.agreement input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1px solid #ccc;
-  display: inline-block;
-  position: relative;
+.agreement-checkbox {
+  transform: scale(0.7);
+  margin-right: -4px;
 }
 
-.agreement input[type="checkbox"]:checked {
-  background: #f46205;
-  border-color: #f46205;
+.agreement-label {
+  color: #000;
 }
 
-.agreement input[type="checkbox"]:checked::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 6px;
-  height: 6px;
-  background: #fff;
-  border-radius: 50%;
-}
-
-.agreement span {
+.agreement-link {
   color: #f46205;
-  // color: #f46205;
-  // margin-left: 2px
 }
 
 @keyframes shakeX {
@@ -276,38 +233,5 @@ const onHandleShowAgreement = (type) => {
 
 .btn-disabled {
   opacity: 0.6;
-}
-
-.agreement-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.close-icon {
-  font-size: 20px;
-}
-
-.agreement-content {
-  flex: 1;
-  padding: 15px;
-  overflow-y: auto;
-}
-
-.agreement-footer {
-  padding: 10px;
-}
-.yixiu-title {
-  text-align: center;
-  font-weight: 900;
-  font-size: 24px;
-}
-.captcha {
-  display: flex;
-}
-.btn-disabled {
-  opacity: 1;
 }
 </style>

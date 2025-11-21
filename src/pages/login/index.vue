@@ -19,20 +19,19 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import {
   getProjectCodeApi,
   getUserInfo,
   getVcodeApi,
   loginApi,
 } from '@/api/user.js'
-import { useUserStore } from '@/stores/user.js'
+import { useUserStore } from '@/store/user.js'
 import PopupService from '@/utils/PopupService.js'
 import RequestLoading from '@/utils/RequestLoading'
 import PhoneInput from './components/PhoneInput.vue'
 import VcodeInput from './components/VcodeInput.vue'
 
-const userStore = useUserStore()
 const components = { PhoneInput, VcodeInput }
 const currentComp = ref('PhoneInput')
 const phone = ref('')
@@ -62,6 +61,8 @@ function openAreaCodeSelect() {
         area_code.value = String(item.code).replace(/^\+/, '')
       },
     },
+  }).catch(err => {
+    console.error('打开弹窗失败:', err)
   })
 }
 async function sendCode() {
@@ -89,14 +90,10 @@ async function sendCode() {
   currentComp.value = 'VcodeInput'
 }
 async function onToken(token) {
-  const { data } = await RequestLoading(getUserInfo, { token })
-  let routeQuery = null
-  if (data?.register) {
-    routeQuery = { path: '/userEdit', query: { first: true } }
-  }
-  else {
-    routeQuery = { path: '/' }
-  }
+  const userStore = useUserStore()
+  const res = await RequestLoading(getUserInfo, { token })
+  // res 现在是完整响应，data 在 res.data 中
+  const data = res.data || res
   userStore.login({
     name: data.name,
     avatar: data.picture,
@@ -105,10 +102,18 @@ async function onToken(token) {
     day: data.day,
     isPro: data.isPro,
   })
-  uni.navigateTo(routeQuery)
+
+  // 登录成功后跳转
+  if (data?.register) {
+    uni.navigateTo({ url: '/pages/index/index?first=true' })
+  }
+  else {
+    uni.reLaunch({ url: '/pages/index/index' })
+  }
 }
 
 async function onVerify() {
+  const userStore = useUserStore()
   // assemble vcode
   const code = vcode.value.join('')
   if (code.length !== 6) {
@@ -120,6 +125,7 @@ async function onVerify() {
       phone: phone.value,
       vcode: code,
     })
+    console.log('loginRes:', loginRes)
     // 请求成功，res.data 应包含 token 按 request.js 响应结构 res.data
     const tokenStr = loginRes.token
     if (!tokenStr) {
@@ -152,7 +158,7 @@ async function onResend() {
   }
 }
 
-onMounted(async () => {
+onShow(async () => {
   // await getCode()
 })
 

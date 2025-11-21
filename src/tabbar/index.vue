@@ -99,7 +99,8 @@ function getImageByIndex(index: number, item: CustomTabBarItem) {
             <view class="bulge">
               <!-- TODO 2/2: 中间鼓包tabbarItem配置：通常是一个图片，或者icon，点击触发业务逻辑 -->
               <!-- 常见的是：扫描按钮、发布按钮、更多按钮等 -->
-              <image class="mt-6rpx h-200rpx w-200rpx" src="/static/tabbar/scan.png" />
+              <image class="mt-6rpx h-40% w-40%" src="/static/images/xiuche1.png" />
+              <text class="bulge_text">修车</text>
             </view>
           </view>
           <view v-else class="relative px-3 text-center">
@@ -116,7 +117,7 @@ function getImageByIndex(index: number, item: CustomTabBarItem) {
             <template v-if="item.iconType === 'image'">
               <image :src="getImageByIndex(index, item)" mode="scaleToFill" class="h-20px w-20px" />
             </template>
-            <view class="mt-2px text-12px">
+            <view class="mt-2px text-12px color-#fff font-bold">
               {{ item.text }}
             </view>
             <!-- 角标显示 -->
@@ -145,26 +146,34 @@ function getImageByIndex(index: number, item: CustomTabBarItem) {
   bottom: 0;
   left: 0;
   right: 0;
-
+  background-color: #222429;
   border-top: 1px solid #eee;
   box-sizing: border-box;
 }
 // 中间鼓包的样式
 .bulge {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   position: absolute;
   top: -20px;
   left: 50%;
   transform-origin: top center;
-  transform: translateX(-50%) scale(0.5) translateY(-33%);
+  transform: translateX(-50%) scale(0.5) translateY(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 250rpx;
-  height: 250rpx;
+  width: 270rpx;
+  height: 270rpx;
   border-radius: 50%;
-  background-color: #fff;
-  box-shadow: inset 0 0 0 1px #fefefe;
-
+  background-color: #2f323e;
+  border: 5px solid black;
+  // box-shadow: inset 0 0 0 1px #fefefe;
+  .bulge_text {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 800;
+  }
   &:active {
     // opacity: 0.8;
   }

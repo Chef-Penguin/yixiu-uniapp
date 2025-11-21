@@ -2,6 +2,7 @@ import type { IDoubleTokenRes } from '@/api/types/login'
 import type { CustomRequestOptions, IResponse } from '@/http/types'
 import { nextTick } from 'vue'
 import { useTokenStore } from '@/store/token'
+import { useUserStore } from '@/store/user'
 import { isDoubleTokenMode } from '@/utils'
 import { toLoginPage } from '@/utils/toLoginPage'
 import { ResultEnum } from './tools/enum'
@@ -28,14 +29,14 @@ export function http<T>(options: CustomRequestOptions) {
         const isTokenExpired = res.statusCode === 401 || code === 401
 
         if (isTokenExpired) {
-          const tokenStore = useTokenStore()
+          const userStore = useUserStore()
           if (!isDoubleTokenMode) {
             // 未启用双token策略，清理用户信息，跳转到登录页
-            tokenStore.logout()
+            userStore.logout()
             toLoginPage()
             return reject(res)
           }
-
+          const tokenStore = useTokenStore()
           /* -------- 无感刷新 token ----------- */
           const { refreshToken } = tokenStore.tokenInfo as IDoubleTokenRes || {}
           // token 失效的，且有刷新 token 的，才放到请求队列里
@@ -101,15 +102,16 @@ export function http<T>(options: CustomRequestOptions) {
               title: responseData.msg || responseData.message || '请求错误',
             })
           }
-          return resolve(responseData.data)
+          // 返回完整的响应数据（包括 data、token 等字段）
+          return resolve(responseData as any)
         }
 
         // 处理其他错误
         !options.hideErrorToast
-        && uni.showToast({
-          icon: 'none',
-          title: (res.data as any).msg || '请求错误',
-        })
+          && uni.showToast({
+            icon: 'none',
+            title: (res.data as any).msg || '请求错误',
+          })
         reject(res)
       },
       // 响应失败

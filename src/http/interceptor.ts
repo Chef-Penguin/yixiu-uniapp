@@ -1,5 +1,5 @@
 import type { CustomRequestOptions } from '@/http/types'
-import { useTokenStore } from '@/store'
+import { useUserStore } from '@/store/user'
 import { getEnvBaseUrl } from '@/utils'
 import { stringifyQuery } from './tools/queryString'
 
@@ -44,16 +44,18 @@ const httpInterceptor = {
     }
     // 1. 请求超时
     options.timeout = 60000 // 60s
-    // 2. （可选）添加小程序端请求头标识
+    // 2. 添加请求头
     options.header = {
+      'Content-Type': 'application/json;charset=utf-8',
       ...options.header,
     }
     // 3. 添加 token 请求头标识
-    const tokenStore = useTokenStore()
-    const token = tokenStore.validToken
+    // 优先从 useUserStore 获取 token（当前项目使用的方式）
+    const userStore = useUserStore()
+    const token = userStore.user.token
 
     if (token) {
-      options.header.Authorization = `Bearer ${token}`
+      options.header.Authorization = token
     }
     return options
   },

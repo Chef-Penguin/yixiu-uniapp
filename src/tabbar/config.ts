@@ -43,22 +43,56 @@ export const nativeTabbarList: NativeTabBarItem[] = [
 // 如果需要配置鼓包，需要在 'tabbar/store.ts' 里面设置，最后在 `tabbar/index.vue` 里面更改鼓包的图片
 export const customTabbarList: CustomTabBarItem[] = [
   {
-    text: '首页',
+    text: '看收藏',
+    pagePath: 'pages/collection/index',
+    // 注意 unocss 图标需要如下处理：（二选一）
+    // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
+    // 2）配置到 unocss.config.ts 的 safelist 中
+    iconType: 'image',
+    icon: '/static/images/Vector1.png',
+    iconActive: '/static/images/Vector.png',
+    // badge: 'dot',
+  },
+  {
+    pagePath: 'pages/archives/index',
+    text: '档案馆',
+    // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
+    // 2）配置到 unocss.config.ts 的 safelist 中
+    iconType: 'image',
+    icon: '/static/images/archive1.png',
+    iconActive: '/static/images/archive.png',
+    // badge: 10,
+  },
+  {
+    text: '修车',
+    isBulge: true,
     pagePath: 'pages/index/index',
     // 注意 unocss 图标需要如下处理：（二选一）
     // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
     // 2）配置到 unocss.config.ts 的 safelist 中
-    iconType: 'unocss',
-    icon: 'i-carbon-home',
+    iconType: 'image',
+    icon: '/static/images/archive1.png',
+    iconActive: '/static/images/archive.png',
     // badge: 'dot',
   },
   {
-    pagePath: 'pages/me/me',
-    text: '我的',
+    pagePath: 'pages/circle/index',
+    text: '修车圈',
     // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
     // 2）配置到 unocss.config.ts 的 safelist 中
-    iconType: 'unocss',
-    icon: 'i-carbon-user',
+    iconType: 'image',
+    icon: '/static/images/xiuchequan1.png',
+    iconActive: '/static/images/xiuchequan.png',
+    // badge: 10,
+  },
+  {
+    pagePath: 'pages/log/index',
+    text: '记日志',
+    // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
+    // 2）配置到 unocss.config.ts 的 safelist 中
+    iconType: 'image',
+    icon: '/static/images/recordLog1.png',
+    iconActive: '/static/images/recordLog.png',
     // badge: 10,
   },
   // 其他类型演示

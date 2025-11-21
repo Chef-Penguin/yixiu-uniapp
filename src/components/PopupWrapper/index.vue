@@ -17,12 +17,12 @@
 </template>
 
 <script setup>
+import { Popup as VanPopup } from 'vant'
 import { ref } from 'vue'
 
 defineOptions({
   name: 'PopupWrapper',
 })
-// import { Popup as VanPopup } from "vant"
 
 const props = defineProps({
   options: { type: Object, required: true },

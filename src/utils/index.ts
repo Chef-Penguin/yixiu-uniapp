@@ -157,3 +157,49 @@ export const isDoubleTokenMode = import.meta.env.VITE_AUTH_MODE === 'double'
  * 通常为 /pages/index/index
  */
 export const HOME_PAGE = `/${(pages as PageMetaDatum[]).find(page => page.type === 'home')?.path || (pages as PageMetaDatum[])[0].path}`
+
+// 定义参数接口
+interface GetNowOptions {
+  includeMonth?: boolean
+  includeTime?: boolean
+  includeDay?: boolean
+}
+
+// 定义默认配置
+const defaults: GetNowOptions = {
+  includeMonth: true,
+  includeTime: true,
+  includeDay: true,
+}
+
+// 补零函数
+const padZero = (num: number): string => (num < 10 ? `0${num}` : num.toString())
+
+// 获取当前时间函数
+export function getNow({
+  includeMonth = defaults.includeMonth!,
+  includeTime = defaults.includeTime!,
+  includeDay = defaults.includeDay!,
+}: GetNowOptions = defaults): string {
+  const date = new Date()
+  const year = date.getFullYear()
+  const month = padZero(date.getMonth() + 1)
+  const day = padZero(date.getDate())
+  const hour = padZero(date.getHours())
+  const minute = padZero(date.getMinutes())
+  const second = padZero(date.getSeconds())
+
+  // 构建日期部分
+  let datePart = year.toString()
+  if (includeMonth) {
+    datePart += `-${month}`
+  }
+  if (includeDay) {
+    datePart += `-${day}`
+  }
+
+  // 构建时间部分
+  const timePart = includeTime ? ` ${hour}:${minute}:${second}` : ''
+
+  return datePart + timePart
+}

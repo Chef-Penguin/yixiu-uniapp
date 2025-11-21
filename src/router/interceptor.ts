@@ -3,10 +3,16 @@
  * 路由拦截，通常也是登录拦截
  * 黑、白名单的配置，请看 config.ts 文件， EXCLUDE_LOGIN_PATH_LIST
  */
+import { useUserStore } from '@/store/user'
 import { tabbarStore } from '@/tabbar/store'
 import { getAllPages, getLastPage, parseUrlToObj } from '@/utils/index'
 
 export const FG_LOG_ENABLE = false
+
+// 不需要登录的页面白名单（登录页本身）
+const LOGIN_WHITE_LIST = [
+  '/pages/login/index',
+]
 
 export const navigateToInterceptor = {
   // 注意，这里的url是 '/' 开头的，如 '/pages/index/index'，跟 'pages.json' 里面的 path 不同
@@ -36,6 +42,34 @@ export const navigateToInterceptor = {
     if (path !== '/' && !getAllPages().some(page => page.path !== path)) {
       console.warn('路由不存在:', path)
       return false // 明确表示阻止原路由继续执行
+    }
+
+    // 登录验证逻辑
+    const userStore = useUserStore()
+    const isInWhiteList = LOGIN_WHITE_LIST.includes(path)
+
+    FG_LOG_ENABLE && console.log('路由拦截器 4: 是否在白名单->', isInWhiteList, ', 是否登录->', userStore.isLogin)
+
+    // 如果未登录且不在白名单中，跳转到登录页
+    if (!userStore.isLogin && !isInWhiteList) {
+      console.log('未登录，跳转到登录页')
+      uni.showToast({
+        title: '请先登录',
+        icon: 'none',
+      })
+      uni.redirectTo({
+        url: '/pages/login/index',
+      })
+      return false // 阻止原路由执行
+    }
+
+    // 如果已登录且试图访问登录页，重定向到首页
+    if (userStore.isLogin && path === '/pages/login/index') {
+      console.log('已登录，跳转到首页')
+      uni.redirectTo({
+        url: '/pages/index/index',
+      })
+      return false
     }
 
     // 处理直接进入路由非首页时，tabbarIndex 不正确的问题

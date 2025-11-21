@@ -160,7 +160,10 @@ export function debounce<F extends (...args: any[]) => void>(
   debounced.cancel = cancel
   debounced.flush = flush
 
-  signal?.addEventListener('abort', cancel, { once: true })
+  // 兼容 uniapp APP 环境：检查 addEventListener 是否存在
+  if (signal && typeof signal.addEventListener === 'function') {
+    signal.addEventListener('abort', cancel, { once: true })
+  }
 
   return debounced
 }
